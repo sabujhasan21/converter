@@ -20,7 +20,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("<h2 class='title'>📄 DUSC PDF Converter</h2>", unsafe_allow_html=True)
-st.caption("Powered by Daffodil University School & College")
+st.caption("Powered by Md Shahriar Hasan Sabuj")
 
 st.divider()
 
