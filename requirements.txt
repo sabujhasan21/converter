@@ -1,25 +1,10 @@
-streamlit==1.37.0
-
-# PDF Core
-PyMuPDF==1.24.9
-PyPDF2==3.0.1
-pdfplumber==0.11.4
-
-# PDF ↔ Office
-pdf2docx==0.5.8
-python-pptx==0.6.23
-openpyxl==3.1.5
-pandas==2.2.2
-
-# PDF → Excel (Table Accurate)
-tabula-py==2.9.3
-
-# PDF Generation
-reportlab==4.2.2
-
-# Image Handling
-Pillow==10.4.0
-
-# UI / Drawing / Auth
-streamlit-drawable-canvas==0.9.3
-streamlit-authenticator==0.3.3
+streamlit
+PyMuPDF
+pdf2docx
+pandas
+PyPDF2
+Pillow
+reportlab
+tabula-py
+python-pptx
+openpyxl
