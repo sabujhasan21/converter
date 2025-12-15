@@ -7,7 +7,6 @@ pdfplumber==0.11.4
 
 # PDF ↔ Office
 pdf2docx==0.5.8
-docx2pdf==0.1.8
 python-pptx==0.6.23
 openpyxl==3.1.5
 pandas==2.2.2
