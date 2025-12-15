@@ -12,6 +12,7 @@ from reportlab.lib.pagesizes import A4
 import tabula
 import os
 
+
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="DUSC PDF Converter", page_icon="📄", layout="centered")
 
