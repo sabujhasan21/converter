@@ -1,20 +1,18 @@
-# DUSC PDF Converter – FULL CLOUD-SAFE VERSION
-# Streamlit Cloud compatible (no docx2pdf)
-
 import streamlit as st
 import fitz  # PyMuPDF
 from pdf2docx import Converter
 import pandas as pd
 from PyPDF2 import PdfReader, PdfWriter
 from PIL import Image
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 import tabula
-import os
-
+from pptx import Presentation
 
 # ---------------- PAGE CONFIG ----------------
-st.set_page_config(page_title="DUSC PDF Converter", page_icon="📄", layout="centered")
+st.set_page_config(
+    page_title="DUSC PDF Converter",
+    page_icon="📄",
+    layout="centered"
+)
 
 # ---------------- BRANDING ----------------
 st.markdown("""
@@ -51,9 +49,12 @@ option = st.selectbox(
 )
 
 # ---------------- FILE UPLOAD ----------------
-files = st.file_uploader("📤 Upload File(s)", accept_multiple_files=True)
+files = st.file_uploader(
+    "📤 Upload File(s)",
+    accept_multiple_files=True
+)
 
-# ---------------- UTILS ----------------
+# ---------------- UTIL ----------------
 def save_file(uploaded, name):
     with open(name, "wb") as f:
         f.write(uploaded.read())
@@ -67,8 +68,11 @@ if files and st.button("🚀 Process"):
         cv = Converter("input.pdf")
         cv.convert("output.docx")
         cv.close()
-        st.success("PDF → Word successful")
-        st.download_button("⬇️ Download", open("output.docx", "rb"), "output.docx")
+        st.download_button(
+            "⬇️ Download Word",
+            open("output.docx", "rb"),
+            "output.docx"
+        )
 
     # PDF → EXCEL
     elif option == "PDF to Excel":
@@ -76,8 +80,16 @@ if files and st.button("🚀 Process"):
         tables = tabula.read_pdf("input.pdf", pages="all")
         with pd.ExcelWriter("output.xlsx") as writer:
             for i, table in enumerate(tables):
-                table.to_excel(writer, sheet_name=f"Table_{i+1}", index=False)
-        st.download_button("⬇️ Download", open("output.xlsx", "rb"), "output.xlsx")
+                table.to_excel(
+                    writer,
+                    sheet_name=f"Table_{i+1}",
+                    index=False
+                )
+        st.download_button(
+            "⬇️ Download Excel",
+            open("output.xlsx", "rb"),
+            "output.xlsx"
+        )
 
     # PDF → IMAGE
     elif option in ["PDF to JPG", "PDF to PNG"]:
@@ -88,21 +100,33 @@ if files and st.button("🚀 Process"):
             ext = "jpg" if option.endswith("JPG") else "png"
             name = f"page_{i+1}.{ext}"
             pix.save(name)
-            st.image(name)
+            st.image(name, caption=f"Page {i+1}")
             st.download_button(name, open(name, "rb"), name)
 
     # IMAGE → PDF
     elif option == "JPG/PNG to PDF":
         images = [Image.open(f).convert("RGB") for f in files]
-        images[0].save("output.pdf", save_all=True, append_images=images[1:])
-        st.download_button("⬇️ Download", open("output.pdf", "rb"), "output.pdf")
+        images[0].save(
+            "output.pdf",
+            save_all=True,
+            append_images=images[1:]
+        )
+        st.download_button(
+            "⬇️ Download PDF",
+            open("output.pdf", "rb"),
+            "output.pdf"
+        )
 
     # COMPRESS PDF
     elif option == "Compress PDF":
         save_file(files[0], "input.pdf")
         doc = fitz.open("input.pdf")
         doc.save("compressed.pdf", garbage=4, deflate=True)
-        st.download_button("⬇️ Download", open("compressed.pdf", "rb"), "compressed.pdf")
+        st.download_button(
+            "⬇️ Download",
+            open("compressed.pdf", "rb"),
+            "compressed.pdf"
+        )
 
     # MERGE PDF
     elif option == "Merge PDF":
@@ -111,7 +135,11 @@ if files and st.button("🚀 Process"):
             save_file(f, f.name)
             merged.insert_pdf(fitz.open(f.name))
         merged.save("merged.pdf")
-        st.download_button("⬇️ Download", open("merged.pdf", "rb"), "merged.pdf")
+        st.download_button(
+            "⬇️ Download",
+            open("merged.pdf", "rb"),
+            "merged.pdf"
+        )
 
     # SPLIT PDF
     elif option == "Split PDF":
@@ -127,16 +155,21 @@ if files and st.button("🚀 Process"):
     # PDF → POWERPOINT
     elif option == "PDF to PowerPoint":
         save_file(files[0], "input.pdf")
-        from pptx import Presentation
         prs = Presentation()
         doc = fitz.open("input.pdf")
         for page in doc:
             slide = prs.slides.add_slide(prs.slide_layouts[6])
             pix = page.get_pixmap()
             pix.save("temp.png")
-            slide.shapes.add_picture("temp.png", 0, 0, width=prs.slide_width)
+            slide.shapes.add_picture(
+                "temp.png", 0, 0, width=prs.slide_width
+            )
         prs.save("output.pptx")
-        st.download_button("⬇️ Download", open("output.pptx", "rb"), "output.pptx")
+        st.download_button(
+            "⬇️ Download PPT",
+            open("output.pptx", "rb"),
+            "output.pptx"
+        )
 
     # WATERMARK
     elif option == "Watermark PDF":
@@ -144,20 +177,37 @@ if files and st.button("🚀 Process"):
         save_file(files[0], "input.pdf")
         doc = fitz.open("input.pdf")
         for p in doc:
-            p.insert_text((72, 72), text, fontsize=40, rotate=45, opacity=0.2)
+            p.insert_text(
+                (72, 72),
+                text,
+                fontsize=40,
+                rotate=45,
+                opacity=0.2
+            )
         doc.save("watermarked.pdf")
-        st.download_button("⬇️ Download", open("watermarked.pdf", "rb"), "watermarked.pdf")
+        st.download_button(
+            "⬇️ Download",
+            open("watermarked.pdf", "rb"),
+            "watermarked.pdf"
+        )
 
     # SIGN PDF
     elif option == "Sign PDF":
-        sig = st.file_uploader("Upload Signature Image", type=["png", "jpg"])
+        sig = st.file_uploader(
+            "Upload Signature Image",
+            type=["png", "jpg"]
+        )
         if sig:
             save_file(files[0], "input.pdf")
             doc = fitz.open("input.pdf")
             rect = fitz.Rect(300, 700, 500, 780)
             doc[-1].insert_image(rect, stream=sig.read())
             doc.save("signed.pdf")
-            st.download_button("⬇️ Download", open("signed.pdf", "rb"), "signed.pdf")
+            st.download_button(
+                "⬇️ Download",
+                open("signed.pdf", "rb"),
+                "signed.pdf"
+            )
 
     # PASSWORD PROTECT
     elif option == "Password Protect PDF":
@@ -170,7 +220,11 @@ if files and st.button("🚀 Process"):
         writer.encrypt(pwd)
         with open("protected.pdf", "wb") as f:
             writer.write(f)
-        st.download_button("⬇️ Download", open("protected.pdf", "rb"), "protected.pdf")
+        st.download_button(
+            "⬇️ Download",
+            open("protected.pdf", "rb"),
+            "protected.pdf"
+        )
 
     # BULK MERGE
     elif option == "Bulk Merge PDF":
@@ -179,7 +233,14 @@ if files and st.button("🚀 Process"):
             save_file(f, f.name)
             merged.insert_pdf(fitz.open(f.name))
         merged.save("bulk.pdf")
-        st.download_button("⬇️ Download", open("bulk.pdf", "rb"), "bulk.pdf")
+        st.download_button(
+            "⬇️ Download",
+            open("bulk.pdf", "rb"),
+            "bulk.pdf"
+        )
 
 st.divider()
-st.markdown("<div class='footer'>© 2025 Daffodil University School & College</div>", unsafe_allow_html=True)
+st.markdown(
+    "<div class='footer'>© 2025 Daffodil University School & College</div>",
+    unsafe_allow_html=True
+)
