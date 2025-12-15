@@ -1,9 +1,5 @@
 streamlit
 PyMuPDF
 pdf2docx
-pandas
 PyPDF2
 Pillow
-tabula-py
-python-pptx
-openpyxl
